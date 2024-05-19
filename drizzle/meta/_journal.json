@@ -1,0 +1,20 @@
+{
+  "version": "5",
+  "dialect": "pg",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "5",
+      "when": 1716132062860,
+      "tag": "0000_peaceful_sharon_ventura",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "5",
+      "when": 1716132734747,
+      "tag": "0001_gorgeous_dragon_man",
+      "breakpoints": true
+    }
+  ]
+}
