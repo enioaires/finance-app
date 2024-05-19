@@ -24,7 +24,7 @@ const Page: FC = () => {
         </div>
       </div>
       <div className="h-full bg-emerald-300 hidden lg:flex items-center justify-center">
-        <Image src="/logo.png" alt="logo" height={450} width={450} />
+        <Image src="/logo.svg" alt="logo" height={450} width={450} />
       </div>
     </div>
   );
