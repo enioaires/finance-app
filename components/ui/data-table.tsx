@@ -15,6 +15,8 @@ import {
   Row,
 } from "@tanstack/react-table";
 
+import { useConfirm } from "@/hooks/use-confirm";
+
 import {
   Table,
   TableBody,
@@ -38,6 +40,7 @@ interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
   filterKey: string;
+  filterName?: string;
   onDelete: (rows: Row<TData>[]) => void;
   disabled?: boolean;
 }
@@ -46,9 +49,15 @@ export function DataTable<TData, TValue>({
   columns,
   data,
   filterKey,
+  filterName,
   onDelete,
   disabled,
 }: Readonly<DataTableProps<TData, TValue>>) {
+  const [ConfirmDialog, confirm] = useConfirm(
+    "Tem certeza?",
+    "Você tem certeza que deseja excluir as contas selecionadas?"
+  );
+
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -74,9 +83,10 @@ export function DataTable<TData, TValue>({
 
   return (
     <div>
+      <ConfirmDialog />
       <div className="flex items-center py-4">
         <Input
-          placeholder={`Buscar por ${filterKey}...`}
+          placeholder={`Buscar por ${filterName ?? filterKey}...`}
           value={(table.getColumn(filterKey)?.getFilterValue() as string) ?? ""}
           onChange={(event) =>
             table.getColumn(filterKey)?.setFilterValue(event.target.value)
@@ -88,7 +98,14 @@ export function DataTable<TData, TValue>({
             variant="outline"
             size="sm"
             className="ml-auto font-normal text-xs"
-            onClick={() => {}}
+            onClick={async () => {
+              const ok = await confirm();
+
+              if (ok) {
+                onDelete(table.getFilteredSelectedRowModel().rows);
+                table.resetRowSelection();
+              }
+            }}
             disabled={disabled}
           >
             <TrashIcon className="size-4 mr-2" />

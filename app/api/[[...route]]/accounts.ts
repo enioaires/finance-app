@@ -3,8 +3,9 @@ import { db } from "@/db/drizzle";
 import { zValidator } from "@hono/zod-validator";
 import { accounts, insertAccountSchema } from "@/db/schema";
 import { getAuth } from "@hono/clerk-auth";
-import { eq } from "drizzle-orm";
+import { and, eq, inArray } from "drizzle-orm";
 import { uuidv7 } from "uuidv7";
+import { z } from "zod";
 
 const app = new Hono()
   .get("/", async (ctx) => {
@@ -48,6 +49,37 @@ const app = new Hono()
           name,
         })
         .returning();
+
+      return ctx.json({ data });
+    }
+  )
+  .post(
+    "/bulk-delete",
+    zValidator(
+      "json",
+      z.object({
+        ids: z.array(z.string()),
+      })
+    ),
+    async (ctx) => {
+      const auth = getAuth(ctx);
+      const values = ctx.req.valid("json");
+
+      if (!auth?.userId) {
+        return ctx.json({ error: "Unauthorized" }, 401);
+      }
+
+      const data = await db
+        .delete(accounts)
+        .where(
+          and(
+            eq(accounts.userId, auth.userId),
+            inArray(accounts.id, values.ids)
+          )
+        )
+        .returning({
+          id: accounts.id,
+        });
 
       return ctx.json({ data });
     }
