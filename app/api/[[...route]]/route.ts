@@ -3,20 +3,11 @@ import { handle } from "hono/vercel";
 import { clerkMiddleware } from "@hono/clerk-auth";
 
 import accounts from "./accounts";
-import { HTTPException } from "hono/http-exception";
 
 export const runtime = "edge";
 
 const app = new Hono().basePath("/api");
 app.use("*", clerkMiddleware());
-
-app.onError((err, ctx) => {
-  if (err instanceof HTTPException) {
-    return err.getResponse();
-  }
-
-  return ctx.json({ error: "Internal Server Error" }, 500);
-});
 
 const routes = app.route("/accounts", accounts);
 
