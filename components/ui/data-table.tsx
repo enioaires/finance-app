@@ -106,7 +106,9 @@ export function DataTable<TData, TValue>({
                 table.resetRowSelection();
               }
             }}
-            disabled={disabled}
+            disabled={
+              disabled || table.getFilteredSelectedRowModel().rows.length === 0
+            }
           >
             <TrashIcon className="size-4 mr-2" />
             Excluir ({table.getFilteredSelectedRowModel().rows.length})
