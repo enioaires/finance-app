@@ -9,7 +9,7 @@ import { client } from "@/lib/hono";
 import { CellActions } from "./cell-actions";
 
 export type ResponseType = InferResponseType<
-  typeof client.api.categories.$get,
+  typeof client.api.accounts.$get,
   200
 >["data"][0];
 

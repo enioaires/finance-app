@@ -15,6 +15,13 @@
       "when": 1716132734747,
       "tag": "0001_gorgeous_dragon_man",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1716224895736,
+      "tag": "0002_nebulous_dragon_lord",
+      "breakpoints": true
     }
   ]
 }
