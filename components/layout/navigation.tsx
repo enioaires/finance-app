@@ -11,7 +11,7 @@ const routes = [
   { href: "/", label: "Geral" },
   { href: "/transactions", label: "Transações" },
   { href: "/accounts", label: "Contas" },
-  { href: "/categories", label: "Categories" },
+  { href: "/categories", label: "Categorias" },
   { href: "/settings", label: "Configurações" },
 ];
 

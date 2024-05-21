@@ -1,45 +1,44 @@
 import { FC } from "react";
+import { useOpenAccount } from "@/features/accounts/hooks/use-open-account";
+import { useGetTransaction } from "../api/use-get-transaction";
+import { AccountForm } from "./account-form";
 import {
   Sheet,
   SheetContent,
   SheetDescription,
   SheetHeader,
 } from "@/components/ui/sheet";
+import { insertAccountSchema } from "@/db/schema";
 import { z } from "zod";
 import { Loader2Icon } from "lucide-react";
+import { useEditAccount } from "../api/use-edit-transaction";
+import { useDeleteAccount } from "../api/use-delete-transaction";
 import { useConfirm } from "@/hooks/use-confirm";
-import { insertCategoriesSchema } from "@/db/schema";
-import { useGetCategory } from "../api/use-get-category";
-import { useEditCategory } from "../api/use-edit-category";
-import { useDeleteCategory } from "../api/use-delete-category";
-import { CategoryForm } from "./category-form";
-import { useOpenCategory } from "../hooks/use-open-category";
 
-const formSchema = insertCategoriesSchema.pick({
+const formSchema = insertAccountSchema.pick({
   name: true,
 });
 
 type FormValues = z.infer<typeof formSchema>;
 
-export const EditCategorySheet: FC = () => {
-  const { isOpen, onClose, id } = useOpenCategory();
+export const EditAccountSheet: FC = () => {
+  const { isOpen, onClose, id } = useOpenAccount();
   const [ConfirmDialog, confirm] = useConfirm(
     "Tem certeza?",
     "Essa ação não pode ser desfeita."
   );
 
-  const { data: currentCategory, isLoading } = useGetCategory(id);
+  const { data: currentAccount, isLoading } = useGetTransaction(id);
 
-  const { mutate: editCategory, isPending: isPendingEdit } =
-    useEditCategory(id);
-  const { mutate: deleteCategory, isPending: isPendingDelete } =
-    useDeleteCategory(id);
+  const { mutate: editAccount, isPending: isPendingEdit } = useEditAccount(id);
+  const { mutate: deleteAccount, isPending: isPendingDelete } =
+    useDeleteAccount(id);
 
   const isPending = isPendingEdit || isPendingDelete;
 
-  const defaultValues = currentCategory
+  const defaultValues = currentAccount
     ? {
-        name: currentCategory.name,
+        name: currentAccount.name,
       }
     : { name: "" };
 
@@ -47,7 +46,7 @@ export const EditCategorySheet: FC = () => {
     const ok = await confirm();
 
     if (ok) {
-      deleteCategory(undefined, {
+      deleteAccount(undefined, {
         onSuccess: () => {
           onClose();
         },
@@ -56,7 +55,7 @@ export const EditCategorySheet: FC = () => {
   };
 
   const onSubmit = (values: FormValues) => {
-    editCategory(values, {
+    editAccount(values, {
       onSuccess: () => {
         onClose();
       },
@@ -68,16 +67,16 @@ export const EditCategorySheet: FC = () => {
       <ConfirmDialog />
       <Sheet open={isOpen} onOpenChange={onClose}>
         <SheetContent className="space-y-4">
-          <SheetHeader className="font-semibold">Editar Categoria</SheetHeader>
+          <SheetHeader className="font-semibold">Editar Conta</SheetHeader>
           <SheetDescription>
-            Edite os campos da categoria e clique em Salvar para confirmar.
+            Edite os campos da conta e clique em Salvar para confirmar.
           </SheetDescription>
           {isLoading ? (
             <div className="absolute inset-0 flex items-center justify-center">
               <Loader2Icon className="size-4 text-muted-foreground animate-spin" />
             </div>
           ) : (
-            <CategoryForm
+            <AccountForm
               id={id}
               onSubmit={onSubmit}
               onDelete={onDelete}

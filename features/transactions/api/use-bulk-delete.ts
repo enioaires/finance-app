@@ -5,29 +5,30 @@ import { toast } from "sonner";
 import { client } from "@/lib/hono";
 
 type ResponseType = InferResponseType<
-  (typeof client.api.categories)["bulk-delete"]["$post"]
+  (typeof client.api.transactions)["bulk-delete"]["$post"]
 >;
 type RequestType = InferRequestType<
-  (typeof client.api.categories)["bulk-delete"]["$post"]
+  (typeof client.api.transactions)["bulk-delete"]["$post"]
 >["json"];
 
-export const useBulkDeleteCategories = () => {
+export const useBulkDeleteTransactions = () => {
   const queryClient = useQueryClient();
 
   const mutation = useMutation<ResponseType, Error, RequestType>({
     mutationFn: async (json) => {
-      const response = await client.api.categories["bulk-delete"]["$post"]({
+      const response = await client.api.transactions["bulk-delete"]["$post"]({
         json,
       });
 
       return await response.json();
     },
     onSuccess: () => {
-      toast.success("Categorias deletadas com sucesso");
-      queryClient.invalidateQueries({ queryKey: ["categories"] });
+      toast.success("Transações deletadas com sucesso");
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
+      // TODO: Also invalidate summary
     },
     onError: () => {
-      toast.error("Erro ao deletar categorias");
+      toast.error("Erro ao deletar Transações");
     },
   });
 
