@@ -49,7 +49,7 @@ const app = new Hono()
           notes: transactions.notes,
           category: categories.name,
           categoryId: transactions.categoryId,
-          accout: accounts.name,
+          account: accounts.name,
           accountId: transactions.accountId,
         })
         .from(transactions)

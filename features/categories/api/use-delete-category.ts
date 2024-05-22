@@ -1,3 +1,4 @@
+import { transactions } from "./../../../db/schema";
 import { InferResponseType } from "hono";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
@@ -23,6 +24,7 @@ export const useDeleteCategory = (id?: string) => {
       toast.success("Categoria deletada com sucesso");
       queryClient.invalidateQueries({ queryKey: ["category", { id }] });
       queryClient.invalidateQueries({ queryKey: ["categories"] });
+      queryClient.invalidateQueries({ queryKey: ["transactions"] });
     },
     onError: () => {
       toast.error("Erro ao deletar categoria");
