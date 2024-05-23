@@ -1,0 +1,62 @@
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { cn } from "@/lib/utils";
+import { FC } from "react";
+import { TableHeadSelect } from "./table-head-select";
+
+type Props = {
+  headers: string[];
+  body: string[][];
+  selectedColumns: Record<string, string | null>;
+  onTableHeadSelectChange: (columnIndex: number, value: string | null) => void;
+};
+
+export const ImportTable: FC<Props> = ({
+  headers,
+  body,
+  selectedColumns,
+  onTableHeadSelectChange,
+}) => {
+  return (
+    <div className="rounded-md border overflow-hidden">
+      <Table>
+        <TableHeader className="bg-muted">
+          <TableRow>
+            {headers.map((_item, index) => (
+              <TableHead key={index}>
+                <TableHeadSelect
+                  columnIndex={index}
+                  selectedColumns={selectedColumns}
+                  onChange={onTableHeadSelectChange}
+                />
+              </TableHead>
+            ))}
+          </TableRow>
+        </TableHeader>
+        <TableBody>
+          {body.map((row: string[], rowIndex) => (
+            <TableRow key={rowIndex}>
+              {row.map((cell, cellIndex) => {
+                const isEmpty = cell === "";
+                return (
+                  <TableCell
+                    key={cellIndex}
+                    className={cn("", isEmpty && "hidden")}
+                  >
+                    {cell}
+                  </TableCell>
+                );
+              })}
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
+    </div>
+  );
+};
