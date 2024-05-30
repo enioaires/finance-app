@@ -1,6 +1,9 @@
 import { type ClassValue, clsx } from "clsx";
-import { eachDayOfInterval, isSameDay } from "date-fns";
+import { eachDayOfInterval, format, isSameDay, subDays } from "date-fns";
 import { twMerge } from "tailwind-merge";
+import { setDefaultOptions } from "date-fns";
+import { ptBR as fnsptBR } from "date-fns/locale";
+setDefaultOptions({ locale: fnsptBR });
 
 export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
@@ -56,4 +59,48 @@ export function fillMissingDays(
   });
 
   return transactionsByDay;
+}
+
+type Period = {
+  from: string | Date | undefined;
+  to: string | Date | undefined;
+};
+
+export function formatDateRange(period: Period) {
+  const defaultTo = new Date();
+  const defaultFrom = subDays(defaultTo, 30);
+
+  if (!period.from) {
+    return `${format(defaultFrom, "LLL dd").toLocaleUpperCase()} - ${format(
+      defaultTo,
+      "LLL dd"
+    ).toLocaleUpperCase()}`;
+  }
+
+  if (period.to) {
+    return `${format(period.from, "LLL dd").toLocaleUpperCase()} - ${format(
+      period.to,
+      "LLL dd"
+    ).toLocaleUpperCase()}`;
+  }
+
+  return format(period.from, "LLL dd").toLocaleUpperCase();
+}
+
+export function formatPercentageChange(
+  value: number,
+  options: { addPrefix?: boolean } = {
+    addPrefix: false,
+  }
+) {
+  const result = new Intl.NumberFormat("pt-BR", {
+    style: "percent",
+    minimumFractionDigits: 2,
+  }).format(value / 100);
+
+  if (options.addPrefix && value > 0) {
+    return `+${result}`;
+  }
+
+  return result;
 }

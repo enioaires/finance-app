@@ -7,6 +7,9 @@ import { Toaster } from "@/components/ui/sonner";
 
 import "./globals.css";
 import { SheetProvider } from "@/providers/sheet-provider";
+import { setDefaultOptions } from "date-fns";
+import { ptBR as fnsptBR } from "date-fns/locale";
+setDefaultOptions({ locale: fnsptBR });
 
 const inter = Inter({ subsets: ["latin"] });
 

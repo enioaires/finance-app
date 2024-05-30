@@ -1,10 +1,11 @@
+import { z } from "zod";
 import { Hono } from "hono";
 import { zValidator } from "@hono/zod-validator";
-import { z } from "zod";
-import { getAuth } from "@hono/clerk-auth";
+import { clerkMiddleware, getAuth } from "@hono/clerk-auth";
 import { subDays, parse, differenceInDays } from "date-fns";
-import { db } from "@/db/drizzle";
 import { and, desc, eq, gte, lt, lte, sql, sum } from "drizzle-orm";
+
+import { db } from "@/db/drizzle";
 import { accounts, categories, transactions } from "@/db/schema";
 import { calculatePercentageChange, fillMissingDays } from "@/lib/utils";
 
@@ -27,7 +28,7 @@ const app = new Hono().get(
     }
 
     const defaultTo = new Date();
-    const defaultFrom = subDays(defaultTo, 90);
+    const defaultFrom = subDays(defaultTo, 30);
 
     const startDate = from
       ? parse(from, "yyyy-MM-dd", new Date())
@@ -82,15 +83,17 @@ const app = new Hono().get(
       currentPeriod.income,
       lastPeriod.income
     );
-
     const expensesChange = calculatePercentageChange(
-      currentPeriod.income,
-      lastPeriod.income
+      currentPeriod.expenses,
+      lastPeriod.expenses
     );
-
+    console.log({
+      currentPeriod,
+      lastPeriod,
+    });
     const remainingChange = calculatePercentageChange(
-      currentPeriod.income,
-      lastPeriod.income
+      currentPeriod.remaining,
+      lastPeriod.remaining
     );
 
     const category = await db
@@ -116,14 +119,14 @@ const app = new Hono().get(
     const topCategories = category.slice(0, 3);
     const otherCategories = category.slice(3);
     const otherSum = otherCategories.reduce(
-      (sum, category) => sum + category.value,
+      (sum, current) => sum + current.value,
       0
     );
 
     const finalCategories = topCategories;
     if (otherCategories.length > 0) {
       finalCategories.push({
-        name: "Others",
+        name: "Other",
         value: otherSum,
       });
     }
@@ -136,7 +139,7 @@ const app = new Hono().get(
             Number
           ),
         expenses:
-          sql`SUM(CASE WHEN ${transactions.amount} < 0 THEN ${transactions.amount} ELSE 0 END)`.mapWith(
+          sql`SUM(CASE WHEN ${transactions.amount} < 0 THEN ABS(${transactions.amount}) ELSE 0 END)`.mapWith(
             Number
           ),
       })
