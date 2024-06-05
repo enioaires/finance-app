@@ -12,7 +12,7 @@ const routes = [
   { href: "/transactions", label: "Transações" },
   { href: "/accounts", label: "Contas" },
   { href: "/categories", label: "Categorias" },
-  { href: "/settings", label: "Configurações" },
+  // { href: "/settings", label: "Configurações" },
 ];
 
 export const Navigation: FC = () => {
